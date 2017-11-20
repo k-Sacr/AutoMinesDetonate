@@ -11,8 +11,6 @@ namespace AutoMinesDetonate
 {
     public class AutoMinesDetonate : BaseSettingsPlugin<AutoMinesDetonateSettings>
     {
-        //private Stack<EntityWrapper> _mines = new Stack<EntityWrapper>();
-        //private Dictionary<EntityWrapper, int> _mines = new Dictionary<EntityWrapper, int>();
         private List<int> _mines;
 
         private Thread _thread;
@@ -41,15 +39,6 @@ namespace AutoMinesDetonate
             //_minions.Remove(entity);
             if (entity != null && entity.Path.Contains("StrengthTotem") && !entity.IsHostile)
                 _activeTotems.Remove(entity);
-            var minionPathString = "";
-            foreach (var minionId in GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Actor>().Minions.ToList())
-            {
-                if (GameController.Game.IngameState.Data.EntityList.EntitiesAsDictionary.ContainsKey(minionId))
-                {
-                    minionPathString = GameController.Game.IngameState.Data.EntityList.EntitiesAsDictionary[minionId].Path;
-                    LogMessage(minionPathString, 3);
-                }
-            }
         }
 
         public override void Render()
@@ -74,31 +63,12 @@ namespace AutoMinesDetonate
 
                     _mines = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Actor>().Minions;
 
-                    //if (_mines >= Settings.NeedMines.Value)
-                    //{
-                    //    try
-                    //    {
-                    //        KeyTools.KeyEvent(KeyTools.KeyEventFlags.KeyD, KeyTools.KeyEventFlags.KeyEventKeyDown);
-                    //        Thread.Sleep(64);
-                    //        KeyTools.KeyEvent(KeyTools.KeyEventFlags.KeyD, KeyTools.KeyEventFlags.KeyEventKeyUp);
-                    //        Thread.Sleep(Settings.Delay.Value + _random.Next(10, 50));
-                    //    }
-                    //    catch (Exception e)
-                    //    {
-                    //        LogMessage(e.Message, 3);
-                    //        LogMessage(e.Source, 3);
-                    //        throw;
-                    //    }
-                    //}
-
                     if (_mines.Count - Settings.Minions.Value >= Settings.NeedMines.Value)
                     {
                         if (_thread == null || !_run)
                         {
                             _thread = new Thread(Boom);
                             _thread.Start();
-                            //LogMessage("Поток:" + _thread.ManagedThreadId, 5);
-
                             Thread.Sleep(200);
                         }
                     }
