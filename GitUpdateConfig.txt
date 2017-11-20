@@ -1,0 +1,11 @@
+Owner: k-Sacr
+Name: AutoMinesDetonate
+Repository
+
+Ignore:
+src
+.gitignore
+README.md
+IgnoreCellSetting.json
+config.ini
+AdvansedFilterSetting.json
