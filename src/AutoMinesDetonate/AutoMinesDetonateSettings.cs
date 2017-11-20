@@ -1,5 +1,6 @@
 ﻿using PoeHUD.Hud.Settings;
 using PoeHUD.Plugins;
+using System.Windows.Forms;
 
 namespace AutoMinesDetonate
 {
@@ -11,11 +12,13 @@ namespace AutoMinesDetonate
             //UseTremor = false;
             UseTotem = true;
             NeedMines = new RangeNode<int>(3, 1, 16);
-            Minions = new RangeNode<int>(1, 0, 8);
+            DetonateKey = Keys.D;
+            //Minions = new RangeNode<int>(1, 0, 8);
             Delay = new RangeNode<int>(750, 500, 2000);
         }
-        //[Menu("Use Tremor?")]
-        //public ToggleNode UseTremor { get; set; }
+
+        [Menu("Detonate Key")]
+        public HotkeyNode DetonateKey { get; set; }
 
         [Menu("Disable when use totem?")]
         public ToggleNode UseTotem { get; set; }
@@ -26,7 +29,7 @@ namespace AutoMinesDetonate
         [Menu("Delay:")]
         public RangeNode<int> Delay { get; set; }
 
-        [Menu("Have minions:")]
-        public RangeNode<int> Minions { get; set; }
+        //[Menu("Have minions:")]
+        //public RangeNode<int> Minions { get; set; }
     }
 }

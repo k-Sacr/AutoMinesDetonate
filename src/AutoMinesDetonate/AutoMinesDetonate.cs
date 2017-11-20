@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
 using PoeHUD.Models;
 using PoeHUD.Plugins;
 using PoeHUD.Poe.Components;
@@ -12,24 +13,17 @@ namespace AutoMinesDetonate
     public class AutoMinesDetonate : BaseSettingsPlugin<AutoMinesDetonateSettings>
     {
         private List<int> _mines;
-
         private Thread _thread;
         private readonly Random _random = new Random();
-
         private bool _run;
+        private int _minions;
+        private readonly HashSet<EntityWrapper> _activeTotems = new HashSet<EntityWrapper>();
 
-        //private List<EntityWrapper> _minions = new List<EntityWrapper>();
-        private HashSet<EntityWrapper> _activeTotems = new HashSet<EntityWrapper>();
-
-        //GameController.Area.CurrentArea.IsTown
         public override void EntityAdded(EntityWrapper entity)
         {
-            //if (Settings.Enable && entity != null && !_minions.Contains(entity) && entity.HasComponent<Monster>() && !entity.IsHostile)
-            //{
-            //    _minions.Add(entity);
-            //}
-            if (entity != null && entity.Path.Contains("StrengthTotem") && !entity.IsHostile)
+            if (entity != null && !entity.IsHostile && entity.Path.Contains("StrengthTotem"))
             {
+                _activeTotems.Clear();
                 _activeTotems.Add(entity);
             }
         }
@@ -37,7 +31,7 @@ namespace AutoMinesDetonate
         public override void EntityRemoved(EntityWrapper entity)
         {
             //_minions.Remove(entity);
-            if (entity != null && entity.Path.Contains("StrengthTotem") && !entity.IsHostile)
+            if (entity != null && !entity.IsHostile && entity.Path.Contains("StrengthTotem"))
                 _activeTotems.Remove(entity);
         }
 
@@ -60,17 +54,17 @@ namespace AutoMinesDetonate
                         _run = false;
                         return;
                     }
+                    var data = GameController.Game.IngameState.Data;
+                    _mines = data.LocalPlayer.GetComponent<Actor>().Minions;
+                    _minions = (from minionId in _mines where data.EntityList.EntitiesAsDictionary
+                                 .ContainsKey(minionId) select data.EntityList.EntitiesAsDictionary[minionId].Path)
+                                 .Count(minionPathString => !minionPathString.Contains("RemoteMine"));
 
-                    _mines = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Actor>().Minions;
-
-                    if (_mines.Count - Settings.Minions.Value >= Settings.NeedMines.Value)
+                    if (_mines.Count - _minions >= Settings.NeedMines.Value && (_thread == null || !_run))
                     {
-                        if (_thread == null || !_run)
-                        {
-                            _thread = new Thread(Boom);
-                            _thread.Start();
-                            Thread.Sleep(200);
-                        }
+                        _thread = new Thread(Boom);
+                        _thread.Start();
+                        Thread.Sleep(200);
                     }
                 }
                 catch (Exception e)
@@ -86,7 +80,6 @@ namespace AutoMinesDetonate
         {
             var r = _random.Next(10, 50);
             _run = true;
-            int minion = 0;
             do
             {
                 if (GameController.Game.IngameState.IngameUi.InventoryPanel.IsVisible
@@ -98,30 +91,19 @@ namespace AutoMinesDetonate
                     return;
                 }
 
-                minion += (from minionId in _mines where GameController.Game.IngameState.Data.EntityList.EntitiesAsDictionary.ContainsKey(minionId) select GameController.Game.IngameState.Data.EntityList.EntitiesAsDictionary[minionId].Path).Count(minionPathString => !minionPathString.Contains("RemoteMine"));
-
-                if (_mines.Count - minion < Settings.NeedMines.Value)
+                if (_mines.Count - _minions < Settings.NeedMines.Value)
                 {
                     _run = false;
                     return;
                 }
 
-                
-
                 try
                 {
-                    KeyTools.KeyEvent(KeyTools.KeyEventFlags.KeyD, KeyTools.KeyEventFlags.KeyEventKeyDown);
+                    KeyTools.KeyEvent(Settings.DetonateKey.Value, KeyTools.KeyEventFlags.KeyEventKeyDown);
                     Thread.Sleep(64);
-                    KeyTools.KeyEvent(KeyTools.KeyEventFlags.KeyD, KeyTools.KeyEventFlags.KeyEventKeyUp);
+                    KeyTools.KeyEvent(Settings.DetonateKey.Value, KeyTools.KeyEventFlags.KeyEventKeyUp);
                     Thread.Sleep(Settings.Delay.Value + r);
-                    //LogMessage(r, 5);
-                    //foreach (var mine in _mines.ToList())
-                    //{
-                    //    if (mine.Value > 1)
-                    //        _mines[mine.Key] = mine.Value - 1;
-                    //    else
-                    //        _mines.Remove(mine.Key);
-                    //}
+                    LogMessage(r, 5);
                 }
                 catch (Exception e)
                 {
@@ -152,12 +134,9 @@ namespace AutoMinesDetonate
             KeyEventKeyUp = 2,
         }
 
-        public static void KeyEvent(KeyEventFlags key, KeyEventFlags value)
+        public static void KeyEvent(Keys key, KeyEventFlags value)
         {
-            keybd_event((byte) key,
-                0,
-                (int) value,
-                0);
+            keybd_event((byte) key, 0, (int) value, 0);
         }
     }
 }
