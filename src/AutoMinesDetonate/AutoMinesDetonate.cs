@@ -103,7 +103,7 @@ namespace AutoMinesDetonate
                     Thread.Sleep(64);
                     KeyTools.KeyEvent(Settings.DetonateKey.Value, KeyTools.KeyEventFlags.KeyEventKeyUp);
                     Thread.Sleep(Settings.Delay.Value + r);
-                    LogMessage(r, 5);
+                    //LogMessage(r, 5);
                 }
                 catch (Exception e)
                 {
