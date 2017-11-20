@@ -1,0 +1,7 @@
+
+Log Entry : 20:19:18 20 ноября 2017 г.
+ Method error: EntityRemoved : System.Collections.Generic.KeyNotFoundException: Данный ключ отсутствует в словаре.
+   в System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   в AutoMinesDetonate.AutoMinesDetonate.EntityRemoved(EntityWrapper entity)
+   в PoeHUD.Plugins.BasePlugin.iEntityRemoved(EntityWrapper entityWrapper) в C:\games\Path of Exile progs\PoEHUD-x64\src\Plugins\BasePlugin.cs:строка 62
+-------------------------------
