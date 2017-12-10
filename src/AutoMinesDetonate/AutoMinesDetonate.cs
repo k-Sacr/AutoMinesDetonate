@@ -56,9 +56,17 @@ namespace AutoMinesDetonate
                     }
                     var data = GameController.Game.IngameState.Data;
                     _mines = data.LocalPlayer.GetComponent<Actor>().Minions;
-                    _minions = (from minionId in _mines where data.EntityList.EntitiesAsDictionary
-                                 .ContainsKey(minionId) select data.EntityList.EntitiesAsDictionary[minionId].Path)
-                                 .Count(minionPathString => !minionPathString.Contains("RemoteMine"));
+                    int count = 0;
+                    foreach (var minionId in _mines)
+                    {
+                        if (data.EntityList.EntitiesAsDictionary.ContainsKey(minionId))
+                        {
+                            var minionPathString = data.EntityList.EntitiesAsDictionary[minionId].Path;
+                            if (!minionPathString.Contains("RemoteMine"))
+                                count++;
+                        }
+                    }
+                    _minions = count;
 
                     if (_mines.Count - _minions >= Settings.NeedMines.Value && (_thread == null || !_run))
                     {
