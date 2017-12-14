@@ -15,12 +15,11 @@ namespace AutoMinesDetonate
         private Thread _thread;
         private readonly Random _random = new Random();
         private bool _run;
-        private int _settingMinion;
+        //private int _settingMinion;
         private readonly HashSet<EntityWrapper> _activeTotems = new HashSet<EntityWrapper>();
 
         public override void Initialise()
         {
-            _settingMinion = _minions.Count - Settings.Minions.Value;
         }
 
         public override void EntityAdded(EntityWrapper entity)
@@ -70,8 +69,9 @@ namespace AutoMinesDetonate
                     //            count++;
                     //    }
                     //}
+                    //_settingMinion = _minions.Count - Settings.Minions.Value;
 
-                    if (_minions.Count - _settingMinion >= Settings.NeedMines.Value && (_thread == null || !_run))
+                    if (_minions.Count - Settings.Minions.Value >= Settings.NeedMines.Value && (_thread == null || !_run))
                     {
                         _thread = new Thread(Boom);
                         _thread.Start();
@@ -101,7 +101,7 @@ namespace AutoMinesDetonate
                     return;
                 }
 
-                if (_minions.Count - _settingMinion < Settings.NeedMines.Value)
+                if (_minions.Count - Settings.Minions.Value < Settings.NeedMines.Value)
                 {
                     _run = false;
                     return;
