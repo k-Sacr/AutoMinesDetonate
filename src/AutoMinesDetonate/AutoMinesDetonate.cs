@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -12,12 +11,17 @@ namespace AutoMinesDetonate
 {
     public class AutoMinesDetonate : BaseSettingsPlugin<AutoMinesDetonateSettings>
     {
-        private List<int> _mines;
+        private List<int> _minions;
         private Thread _thread;
         private readonly Random _random = new Random();
         private bool _run;
-        private int _minions;
+        private int _settingMinion;
         private readonly HashSet<EntityWrapper> _activeTotems = new HashSet<EntityWrapper>();
+
+        public override void Initialise()
+        {
+            _settingMinion = _minions.Count - Settings.Minions.Value;
+        }
 
         public override void EntityAdded(EntityWrapper entity)
         {
@@ -55,24 +59,22 @@ namespace AutoMinesDetonate
                         return;
                     }
                     var data = GameController.Game.IngameState.Data;
-                    _mines = data.LocalPlayer.GetComponent<Actor>().Minions;
-                    int count = 0;
-                    foreach (var minionId in _mines)
-                    {
-                        if (data.EntityList.EntitiesAsDictionary.ContainsKey(minionId))
-                        {
-                            var minionPathString = data.EntityList.EntitiesAsDictionary[minionId].Path;
-                            if (!minionPathString.Contains("RemoteMine"))
-                                count++;
-                        }
-                    }
-                    _minions = count;
+                    _minions = data.LocalPlayer.GetComponent<Actor>().Minions;
+                    //int count = 0;
+                    //foreach (var minionId in _minions)
+                    //{
+                    //    if (data.EntityList.EntitiesAsDictionary.ContainsKey(minionId))
+                    //    {
+                    //        var minionPathString = data.EntityList.EntitiesAsDictionary[minionId].Path;
+                    //        if (!minionPathString.Contains("RemoteMine"))
+                    //            count++;
+                    //    }
+                    //}
 
-                    if (_mines.Count - _minions >= Settings.NeedMines.Value && (_thread == null || !_run))
+                    if (_minions.Count - _settingMinion >= Settings.NeedMines.Value && (_thread == null || !_run))
                     {
                         _thread = new Thread(Boom);
                         _thread.Start();
-                        Thread.Sleep(200);
                     }
                 }
                 catch (Exception e)
@@ -99,7 +101,7 @@ namespace AutoMinesDetonate
                     return;
                 }
 
-                if (_mines.Count - _minions < Settings.NeedMines.Value)
+                if (_minions.Count - _settingMinion < Settings.NeedMines.Value)
                 {
                     _run = false;
                     return;

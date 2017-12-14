@@ -13,7 +13,7 @@ namespace AutoMinesDetonate
             UseTotem = true;
             NeedMines = new RangeNode<int>(3, 1, 16);
             DetonateKey = Keys.D;
-            //Minions = new RangeNode<int>(1, 0, 8);
+            Minions = new RangeNode<int>(1, 0, 8);
             Delay = new RangeNode<int>(750, 500, 2000);
         }
 
@@ -29,7 +29,7 @@ namespace AutoMinesDetonate
         [Menu("Delay:")]
         public RangeNode<int> Delay { get; set; }
 
-        //[Menu("Have minions:")]
-        //public RangeNode<int> Minions { get; set; }
+        [Menu("Have minions:")]
+        public RangeNode<int> Minions { get; set; }
     }
 }
