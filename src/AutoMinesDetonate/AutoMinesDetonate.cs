@@ -11,8 +11,8 @@ namespace AutoMinesDetonate
 {
     public class AutoMinesDetonate : BaseSettingsPlugin<AutoMinesDetonateSettings>
     {
-        private List<int> _minions;
-        private Thread _thread;
+		long lMinionCount;
+		private Thread _thread;
         private readonly Random _random = new Random();
         private bool _run;
         //private int _settingMinion;
@@ -33,7 +33,6 @@ namespace AutoMinesDetonate
 
         public override void EntityRemoved(EntityWrapper entity)
         {
-            //_minions.Remove(entity);
             if (entity != null && !entity.IsHostile && entity.Path.Contains("StrengthTotem"))
                 _activeTotems.Remove(entity);
         }
@@ -58,20 +57,9 @@ namespace AutoMinesDetonate
                         return;
                     }
                     var data = GameController.Game.IngameState.Data;
-                    _minions = data.LocalPlayer.GetComponent<Actor>().Minions;
-                    //int count = 0;
-                    //foreach (var minionId in _minions)
-                    //{
-                    //    if (data.EntityList.EntitiesAsDictionary.ContainsKey(minionId))
-                    //    {
-                    //        var minionPathString = data.EntityList.EntitiesAsDictionary[minionId].Path;
-                    //        if (!minionPathString.Contains("RemoteMine"))
-                    //            count++;
-                    //    }
-                    //}
-                    //_settingMinion = _minions.Count - Settings.Minions.Value;
+                    lMinionCount = data.LocalPlayer.GetComponent<Actor>().DeployedObjectsCount;
 
-                    if (_minions.Count - Settings.Minions.Value >= Settings.NeedMines.Value && (_thread == null || !_run))
+                    if (lMinionCount - Settings.Minions.Value >= Settings.NeedMines.Value && (_thread == null || !_run))
                     {
                         _thread = new Thread(Boom);
                         _thread.Start();
@@ -101,7 +89,7 @@ namespace AutoMinesDetonate
                     return;
                 }
 
-                if (_minions.Count - Settings.Minions.Value < Settings.NeedMines.Value)
+                if (lMinionCount - Settings.Minions.Value < Settings.NeedMines.Value)
                 {
                     _run = false;
                     return;
