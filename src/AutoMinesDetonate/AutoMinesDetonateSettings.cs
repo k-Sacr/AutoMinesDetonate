@@ -11,6 +11,7 @@ namespace AutoMinesDetonate
             Enable = true;
             //UseTremor = false;
             UseTotem = true;
+            CapsLock = true;
             NeedMines = new RangeNode<int>(3, 1, 16);
             DetonateKey = Keys.D;
             Minions = new RangeNode<int>(1, 0, 8);
@@ -22,6 +23,9 @@ namespace AutoMinesDetonate
 
         [Menu("Disable when use totem?")]
         public ToggleNode UseTotem { get; set; }
+
+        [Menu("Disable when CapsLock Inactive")]
+        public ToggleNode CapsLock { get; set; }
 
         [Menu("Need Mines:")]
         public RangeNode<int> NeedMines { get; set; }

@@ -17,18 +17,17 @@ namespace AutoMinesDetonate
         private bool _run;
         //private int _settingMinion;
         private readonly HashSet<EntityWrapper> _activeTotems = new HashSet<EntityWrapper>();
-
+        
         public override void Initialise()
         {
         }
-
+        
         public override void EntityAdded(EntityWrapper entity)
         {
             if (entity != null && !entity.IsHostile && entity.Path.Contains("StrengthTotem"))
             {
                 _activeTotems.Clear();
-                _activeTotems.Add(entity);
-            }
+                _activeTotems.Add(entity);            }
         }
 
         public override void EntityRemoved(EntityWrapper entity)
@@ -56,6 +55,12 @@ namespace AutoMinesDetonate
                         _run = false;
                         return;
                     }
+                    if (Settings.CapsLock && Control.IsKeyLocked(Keys.CapsLock) == false)
+                    {
+                            _run = false;
+                            return;
+                    }
+                    
                     var data = GameController.Game.IngameState.Data;
                     lMinionCount = data.LocalPlayer.GetComponent<Actor>().DeployedObjectsCount;
 

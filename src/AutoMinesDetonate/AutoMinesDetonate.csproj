@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="PoeHUD, Version=6.3.9600.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Release\PoeHUD.exe</HintPath>
+      <HintPath>..\..\..\PoEHUD-x64\Release\PoeHUD.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
